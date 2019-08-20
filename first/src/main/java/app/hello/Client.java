@@ -3,8 +3,8 @@ package app.hello;
 import javax.persistence.*;
 
 @Entity // This tells Hibernate to make a table out of this class
-@Table(name = "user")
-public class User {
+@Table(name = "client")
+public class Client {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Integer id;
