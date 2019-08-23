@@ -1,0 +1,8 @@
+----------------------config
+To start ZooKeeper you need a configuration file. Here is a sample, create it in conf/zoo.cfg:
+---------------------start
+bin/zkServer.sh start
+--------------------connect
+$ bin/zkCli.sh -server 127.0.0.1:2181
+-----------list
+ls /

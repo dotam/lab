@@ -1,0 +1,77 @@
+----------------------------------------------start and stop---------------------------------------------
+-- Start
+./bin/solr start -e cloud
+./bin/solr start -a "-Xdebug -Xrunjdwp:transport=dt_socket, server=y,suspend=n,address=1044"
+
+-f
+Start Solr in the foreground
+-p <port>
+Start Solr on the defined port. If this is not specified, '8983' will be used.
+-z <zkHost>
+Start Solr with the defined ZooKeeper connection string. This option is only used with the -c option, to start Solr in SolrCloud mode. If ZK_HOST is not specified in solr.in.sh/solr.in.cmd and this option is not provided, Solr will start the embedded ZooKeeper instance and use that instance for SolrCloud operations.
+Example: bin/solr start -c -z server1:2181,server2:2181
+--------------------------------------------
+Setting Java System Properties
+The bin/solr script will pass any additional parameters that begin with -D to the JVM, which allows you to set arbitrary Java system properties.
+
+For example, to set the auto soft-commit frequency to 3 seconds, you can do:
+
+bin/solr start -Dsolr.autoSoftCommit.maxTime=3000
+------------------------------stop----------------
+--stop and clean
+bin/solr stop -all ; rm -Rf example/cloud/
+bin/solr stop -p 8983
+------------------------------Restart Solr
+./bin/solr start -c -p 8983 -s example/cloud/node1/solr
+
+./bin/solr start -c -p 7574 -s example/cloud/node2/solr -z localhost:9983
+
+----------------------------------------------------------Collections and Cores
+The bin/solr script can also help you create new collections (in SolrCloud mode) or cores (in standalone mode), or delete collections.
+-- delete collection
+bin/solr delete -c techproducts
+
+--create new collection
+bin/solr create -c <yourCollection> -s 2 -rf 2
+For instance, the command bin/solr create -c mycoll -d /tmp/myconfigs, will upload /tmp/myconfigs into ZooKeeper under /configs/mycoll.
+
+
+-- create field
+curl -X POST -H 'Content-type:application/json' --data-binary '{"add-field": {"name":"name", "type":"text_general", "multiValued":false, "stored":true}}' http://localhost:8983/solr/films/schema
+
+-- create copy field
+curl -X POST -H 'Content-type:application/json' --data-binary '{"add-copy-field" : {"source":"*","dest":"_text_"}}' http://localhost:8983/solr/films/schema
+
+-- index from folder
+bin/post -c techproducts example/exampledocs/*
+
+--Deleting Data
+bin/post -c localDocs -d "<delete><id>SP2514N</id></delete>"
+bin/post -c localDocs -d "<delete><query>*:*</query></delete>"
+
+-- Search by default copy field
+curl "http://localhost:8983/solr/techproducts/select?q=electronics"
+
+-- Search by field
+curl "http://localhost:8983/solr/techproducts/select?q=cat:electronics"
+
+-- Search by phrase
+curl "http://localhost:8983/solr/techproducts/select?q=\"CAS+latency\""
+
+-- Search by combining (+=%2B and -)
+curl "http://localhost:8983/solr/techproducts/select?q=%2Belectronics%20%2Bmusic"
+
+-- Faceting: Faceting allows the search results to be arranged into subsets (or buckets, or categories), providing a count for each subset. There are several types of faceting: field values, numeric and date ranges, pivots (decision tree), and arbitrary query faceting.
+curl "http://localhost:8983/solr/films/select?q=*:*&rows=0&facet=true&facet.field=genre_str"
+---------------------------------------------------
+sample value
+"facet_counts":{
+    "facet_queries":{},
+    "facet_fields":{
+      "genre_str":[
+        "Drama",552,
+        "Comedy",389,
+        "Romance Film",270,
+-------------------------------------------------------
+
+
