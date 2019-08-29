@@ -2,7 +2,8 @@
 -- Start
 ./bin/solr start -e cloud
 ./bin/solr start -a "-Xdebug -Xrunjdwp:transport=dt_socket, server=y,suspend=n,address=1044"
-
+./bin/solr  start -f -c -z localhost:3181 -a "-Dlog4j.debug=true -Dsolr.home.dir=/home/tam/workspace/lab/solrhome/solr -Dsolr.data.dir=/home/tam/workspace/lab/solrhome/data"
+-a "-Denable.dih.dataConfigParam=true"
 -f
 Start Solr in the foreground
 -p <port>
@@ -26,11 +27,17 @@ bin/solr stop -p 8983
 
 ./bin/solr start -c -p 7574 -s example/cloud/node2/solr -z localhost:9983
 
+
+------------------------------------------------------------------------------
+./bin/solr zk -z localhost:3181 upconfig -n client-config -d /home/tam/workspace/lab/solrhome/solr/cores/client/conf/
+ ./bin/solr zk cp file:/home/tam/workspace/lab/solrhome/solr/solr.xml zk:/solr.xml -z localhost:3181
+-------------------------------------------------------------------------------------------------
+
 ----------------------------------------------------------Collections and Cores
 The bin/solr script can also help you create new collections (in SolrCloud mode) or cores (in standalone mode), or delete collections.
 -- delete collection
 bin/solr delete -c techproducts
-
+/home/tam/workspace/lab/docs/client1.csv
 --create new collection
 bin/solr create -c <yourCollection> -s 2 -rf 2
 For instance, the command bin/solr create -c mycoll -d /tmp/myconfigs, will upload /tmp/myconfigs into ZooKeeper under /configs/mycoll.

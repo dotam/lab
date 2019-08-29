@@ -1,6 +1,7 @@
 package app.hello;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity // This tells Hibernate to make a table out of this class
 @Table(name = "client")
@@ -13,6 +14,16 @@ public class Client {
     private String name;
     @Column(name = "email")
     private String email;
+    @Column(name = "last_modified")
+    private Date lastModified;
+
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
+    }
 
     public Integer getId() {
         return id;

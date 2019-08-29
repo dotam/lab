@@ -21,6 +21,7 @@
      this file, see http://wiki.apache.org/solr/SolrConfigXml.
 -->
 <config>
+
   <!-- In all configuration below, a prefix of "solr." for class names
        is an alias that causes solr to search appropriate packages,
        including org.apache.solr.(search|update|request|core|analysis)
@@ -39,7 +40,7 @@
 
   <!-- <lib/> directives can be used to instruct Solr to load any Jars
        identified and use them to resolve any "plugins" specified in
-       your solrconfig.xml or schema.xml (ie: Analyzers, Request
+       your solrconfig.xml or schema.xml.bk1.xml (ie: Analyzers, Request
        Handlers, etc...).
 
        All directories and paths are resolved relative to the
@@ -72,6 +73,9 @@
        The examples below can be used to load some solr-contribs along
        with their external dependencies.
     -->
+<!--  <lib dir="${solr.home.dir}/libs/" regex=".*\.jar"/>-->
+  <lib dir="${solr.install.dir:../../../..}/contrib/dataimporthandler/lib" regex=".*\.jar" />
+  <lib dir="${solr.install.dir:../../../..}/dist/" regex="solr-dataimporthandler-.*\.jar" />
   <lib dir="${solr.install.dir:../../../..}/contrib/extraction/lib" regex=".*\.jar" />
   <lib dir="${solr.install.dir:../../../..}/dist/" regex="solr-cell-\d.*\.jar" />
 
@@ -702,6 +706,11 @@
        of SearchComponents (see below) and supports distributed
        queries across multiple shards
     -->
+  <requestHandler name="/dataimport" class="solr.DataImportHandler">
+    <lst name="defaults">
+      <str name="config">db-data-config.xml</str>
+    </lst>
+  </requestHandler>
   <requestHandler name="/select" class="solr.SearchHandler">
     <!-- default values for query parameters can be specified, these
          will be overridden by parameters in the request
@@ -1143,6 +1152,12 @@
 
        See http://wiki.apache.org/solr/GuessingFieldTypes
     -->
+<!--  <schemaFactory class="ManagedIndexSchemaFactory">-->
+<!--    <bool name="mutable">true</bool>-->
+<!--    <str name="managedSchemaResourceName">managed-schema</str>-->
+<!--</schemaFactory>-->
+  <schemaFactory class="ClassicIndexSchemaFactory"/>
+
   <updateProcessor class="solr.UUIDUpdateProcessorFactory" name="uuid"/>
   <updateProcessor class="solr.RemoveBlankFieldUpdateProcessorFactory" name="remove-blank"/>
   <updateProcessor class="solr.FieldNameMutatingUpdateProcessorFactory" name="field-name-mutating">
@@ -1194,7 +1209,7 @@
   </updateProcessor>
 
   <!-- The update.autoCreateFields property can be turned to false to disable schemaless mode -->
-  <updateRequestProcessorChain name="add-unknown-fields-to-the-schema" default="${update.autoCreateFields:true}"
+  <updateRequestProcessorChain name="add-unknown-fields-to-the-schema" default="${update.autoCreateFields:false}"
            processor="uuid,remove-blank,field-name-mutating,parse-boolean,parse-long,parse-double,parse-date,add-schema-fields">
     <processor class="solr.LogUpdateProcessorFactory"/>
     <processor class="solr.DistributedUpdateProcessorFactory"/>
@@ -1288,7 +1303,7 @@
      <queryResponseWriter name="php" class="solr.PHPResponseWriter"/>
      <queryResponseWriter name="phps" class="solr.PHPSerializedResponseWriter"/>
      <queryResponseWriter name="csv" class="solr.CSVResponseWriter"/>
-     <queryResponseWriter name="schema.xml" class="solr.SchemaXmlResponseWriter"/>
+     <queryResponseWriter name="schema.xml.bk1.xml" class="solr.SchemaXmlResponseWriter"/>
     -->
 
   <queryResponseWriter name="json" class="solr.JSONResponseWriter">

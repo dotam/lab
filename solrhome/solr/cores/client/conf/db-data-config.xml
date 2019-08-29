@@ -1,0 +1,11 @@
+<dataConfig>
+    <dataSource driver="org.postgresql.Driver" url="jdbc:postgresql://localhost:5432/test" user="staffingboss" password="staffingboss" />
+    <document>
+        <entity name="client" query="select * from client">
+            <field column="id" name="id" />
+            <field column="name" name="name" />
+            <field column="email" name="email" />
+        </entity>
+    </document>
+</dataConfig>
+
